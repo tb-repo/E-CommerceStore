@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:6-alpine
+    image: mongo:6
     container_name: ecommerce-mongodb
     restart: always
     ports:
