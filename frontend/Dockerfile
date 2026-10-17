@@ -1,6 +1,9 @@
 # Build Stage
 FROM node:18-alpine AS builder
 WORKDIR /app
+# Prevent Webpack OOM by disabling heavy source maps
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 COPY package*.json ./
 RUN npm install
 COPY . .
