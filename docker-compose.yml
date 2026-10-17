@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6-alpine
+    container_name: ecommerce-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - ecommerce-net
+
+  user-service:
+    build:
+      context: ./backend/user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_users
+      - JWT_SECRET=skilltest_jwt_secret_key_2026
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-net
+
+  product-service:
+    build:
+      context: ./backend/product-service
+      dockerfile: Dockerfile
+    container_name: product-service
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_products
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-net
+
+  cart-service:
+    build:
+      context: ./backend/cart-service
+      dockerfile: Dockerfile
+    container_name: cart-service
+    restart: always
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_carts
+      - PRODUCT_SERVICE_URL=http://product-service:3002
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-net
+
+  order-service:
+    build:
+      context: ./backend/order-service
+      dockerfile: Dockerfile
+    container_name: order-service
+    restart: always
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - MONGODB_URI=mongodb://mongodb:27017/ecommerce_orders
+      - CART_SERVICE_URL=http://cart-service:3003
+      - PRODUCT_SERVICE_URL=http://product-service:3002
+      - USER_SERVICE_URL=http://user-service:3001
+    depends_on:
+      - mongodb
+    networks:
+      - ecommerce-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ecommerce-frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "3000:3000"
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - order-service
+    networks:
+      - ecommerce-net
+
+networks:
+  ecommerce-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
