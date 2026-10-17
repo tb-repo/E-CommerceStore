@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "instance_type" {
   description = "EC2 Instance type"
   type        = string
-  default     = "t3.small" # 2GB RAM is ideal for 5 containers
+  default     = "t3.medium" # 2GB RAM is ideal for 5 containers
 }
 
 variable "project_name" {
