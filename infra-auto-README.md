@@ -235,46 +235,11 @@ Order placement and order history view managed by the Order Service:
 
 ---
 
-## 8. Service Endpoints and Health Check Verification
-
-The evaluator can test each individual service endpoint using standard HTTP requests:
-
-| Service | Port | Endpoint URL | Expected Status |
-| :--- | :---: | :--- | :---: |
-| **Frontend (Standard)** | 80 | `http://<EC2_PUBLIC_IP>/` | HTTP 200 (Live Web UI) |
-| **Frontend (Custom)** | 3000 | `http://<EC2_PUBLIC_IP>:3000/` | HTTP 200 (Live Web UI) |
-| **Frontend Health** | 80 / 3000 | `http://<EC2_PUBLIC_IP>/health` | `{"service":"Frontend Service","status":"Live"}` |
-| **User Service** | 3001 | `http://<EC2_PUBLIC_IP>:3001/health` | `{"service":"User Service","status":"OK","port":3001}` |
-| **Product Service** | 3002 | `http://<EC2_PUBLIC_IP>:3002/health` | `{"service":"Product Service","status":"OK","port":3002}` |
-| **Cart Service** | 3003 | `http://<EC2_PUBLIC_IP>:3003/health` | `{"service":"Cart Service","status":"OK","port":3003}` |
-| **Order Service** | 3004 | `http://<EC2_PUBLIC_IP>:3004/health` | `{"service":"Order Service","status":"OK","port":3004}` |
-
-### Terminal Verification Commands
-
-```bash
-# Frontend Web App
-curl -I http://<EC2_PUBLIC_IP>
-curl -I http://<EC2_PUBLIC_IP>:3000
-
-# Frontend Health
-curl http://<EC2_PUBLIC_IP>/health
-
-# Microservices Health Checks
-curl http://<EC2_PUBLIC_IP>:3001/health
-curl http://<EC2_PUBLIC_IP>:3002/health
-curl http://<EC2_PUBLIC_IP>:3003/health
-curl http://<EC2_PUBLIC_IP>:3004/health
-```
-
----
-
-## 9. Infrastructure Teardown Instructions
+## 8. Infrastructure Teardown Instructions
 
 To avoid unnecessary AWS cloud charges after assessment evaluation, destroy all provisioned infrastructure using Terraform:
 
 ```bash
 cd terraform
-terraform destroy -auto-approve
+terraform destroy
 ```
-
-This single command safely removes the EC2 instance, security group, key pair, subnet, route table, internet gateway, and VPC in reverse dependency order.
